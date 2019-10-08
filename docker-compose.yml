@@ -1,0 +1,3 @@
+ErrorLogging:
+  image: test_build
+    
