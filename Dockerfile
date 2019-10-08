@@ -9,7 +9,7 @@ ARG BRANCH
 
 RUN apt-get update -y && \
     apt-get install -y wget && \
-    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /kb/runtime
 
@@ -19,8 +19,7 @@ RUN mkdir -p /kb/runtime
 COPY --from=narrative /kb/runtime/lib /kb/runtime/lib
 
 COPY bin /root/bin
-RUN cd /root/bin && \
-    wget https://github.com/kbase/dockerize/raw/master/dockerize-linux-amd64-v0.6.1.tar.gz && \
+RUN cd /root/bin && wget https://github.com/kbase/dockerize/raw/master/dockerize-linux-amd64-v0.6.1.tar.gz && \
     tar xzf dockerize-linux-amd64-v0.6.1.tar.gz && \
     rm dockerize-linux-amd64-v0.6.1.tar.gz
 
