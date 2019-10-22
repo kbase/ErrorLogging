@@ -33,13 +33,16 @@ def get_app_stats(start_date, end_date):
     error_logs = []
     for log in job_states:
         if log.get('error'):
-            errlog_dictionary = {"user": log["user"], "error_msg": log.get('status'), "app_id": log["app_id"],
-                                 "job_id": log["job_id"], "type": "joblogs"}
+            # Convert timestamps from milliseconds to seconds.
+            millisec_crtime = log["creation_time"]/1000.0
+            millisec_strtime = log["exec_start_time"]/1000.0
+            creation_time_iso = datetime.datetime.utcfromtimestamp(millisec_crtime).isoformat()
+            start_time_iso = datetime.datetime.utcfromtimestamp(millisec_strtime).isoformat()
+
+            errlog_dictionary = {"user" : log["user"], "error_msg": log.get('status'), "app_id" : log["app_id"], "type": "joblogs",
+                                 "job_id": log["job_id"], 'timestamp': creation_time_iso, 'start_time': start_time_iso}
             c.to_logstashJson(errlog_dictionary)
             error_logs.append(errlog_dictionary)
-
-    #with open(os.path.join('../JobLogs', 'error_logs.json'), 'w') as fout:
-        #json.dump(error_logs, fout)
 
     return error_logs
 
