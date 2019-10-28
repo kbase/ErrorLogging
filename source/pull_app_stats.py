@@ -31,20 +31,31 @@ def get_app_stats(start_date, end_date):
     job_states = metrics[0]['job_states']
 
     error_logs = []
+    #error_list = []
     for log in job_states:
+        # Convert timestamps from milliseconds to seconds.
+        millisec_crtime = log["creation_time"]/1000.0
+        creation_time_iso = datetime.datetime.utcfromtimestamp(millisec_crtime).isoformat()
         if log.get('error'):
-            # Convert timestamps from milliseconds to seconds.
-            millisec_crtime = log["creation_time"]/1000.0
-            millisec_strtime = log["exec_start_time"]/1000.0
-            creation_time_iso = datetime.datetime.utcfromtimestamp(millisec_crtime).isoformat()
-            start_time_iso = datetime.datetime.utcfromtimestamp(millisec_strtime).isoformat()
-
-            errlog_dictionary = {"user" : log["user"], "error_msg": log.get('status'), "app_id" : log["app_id"], "type": "joblogs",
-                                 "job_id": log["job_id"], 'timestamp': creation_time_iso, 'start_time': start_time_iso}
-            c.to_logstashJson(errlog_dictionary)
-            error_logs.append(errlog_dictionary)
-
-    return error_logs
+            if "app_id" in log:
+                if log.get('status') == '':
+                    errlog_dictionary = {"user" : log["user"], "error_msg": "_NULL_", "app_id" : log["app_id"], "type": "errorlogs",
+                                 "job_id": log["job_id"], 'timestamp': creation_time_iso}
+                    #print(errlog_dictionary)
+                else:
+                    errlog_dictionary = {"user" : log["user"], "error_msg": log.get('status'), "app_id" : log["app_id"], "type": "errorlogs",
+                                 "job_id": log["job_id"], 'timestamp': creation_time_iso}
+            
+            
+            else:
+                errlog_dictionary = {"user" : log["user"], "error_msg": log.get('status'), "app_id" : "None", "type": "errorlogs",
+                                 "job_id": log["job_id"], 'timestamp': creation_time_iso}
+                print(errlog_dictionary)
+            
+        c.to_logstashJson(errlog_dictionary)
+            
+            
+    print("Error logs added to Logstash for date range: {} to {}".format(start_date, end_date))
 
 
 
