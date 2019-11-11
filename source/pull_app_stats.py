@@ -33,7 +33,7 @@ def get_app_stats(start_date, end_date):
     job_states = metrics[0]['job_states']
 
     error_logs = []
-    delimiters = "{", "}", "''", ":", ","
+    delimiters = "{", "}", "''", ":", ",", "2", "message"
     regexPattern = '|'.join(map(re.escape, delimiters))
     
     for log in job_states:
