@@ -5,7 +5,7 @@ import os
 import re
 import datetime
 import json
-import client
+import client as c
 import error_categories
 
 token = os.environ['USER_TOKEN']
