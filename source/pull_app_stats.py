@@ -4,13 +4,14 @@ import os
 import re
 import datetime
 import json
-import client as c
+import client
 import error_categories
 
 token = os.environ['USER_TOKEN']
 service_wizard_url = os.environ['SERVICE_WIZARD_URL']
+yesterday = (datetime.date.today() - datetime.timedelta(days=1))
 
-def get_app_stats(start_date, end_date):
+def get_app_stats(start_date=datetime.datetime.combine(yesterday, datetime.datetime.min.time()), end_date=datetime.datetime.combine(yesterday, datetime.datetime.max.time())):
 
     client = ServiceClient(service_wizard_url, use_url_lookup=True, token=token)
 

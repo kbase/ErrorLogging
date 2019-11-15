@@ -102,7 +102,6 @@ def add_category(app_log):
         elif app_log.get('status').find('blast') >= 0 and app_log.get('status').find('Query is Empty') >= 0:
             category = 'appBLASTError'
         else:
-            category = 'method ' + app_log.get('method')
-            app_log['status'] = app_log.get('status').replace("\n", ' \\n ')  # Force a single line so list can be sorted
-            app_log['status'] = app_log.get('status').replace("\r", ' \\r ')
+            category = "Undefined"
+
     return category
