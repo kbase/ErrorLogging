@@ -1,4 +1,5 @@
 
+
 from biokbase.service.Client import Client as ServiceClient
 import os
 import re
@@ -33,7 +34,6 @@ def get_app_stats(start_date=datetime.datetime.combine(yesterday, datetime.datet
     metrics = client.sync_call('kb_Metrics.get_app_metrics', [{'epoch_range': [epoch_start, epoch_end]}])
     job_states = metrics[0]['job_states']
 
-    error_logs = []
     delimiters = "{", "}", "''", ":", ",", "2", "message"
     regexPattern = '|'.join(map(re.escape, delimiters))
     
@@ -44,7 +44,7 @@ def get_app_stats(start_date=datetime.datetime.combine(yesterday, datetime.datet
         if log.get('error'):
             if "app_id" in log:
                 error = log.get('status')
-                if error == None:
+                if error is  None:
                     errlog_dictionary = {"user" : log["user"], "error_msg": str(error), "app_id" : "None", "type": "errorlogs",
                                          "job_id": log["job_id"], 'timestamp': creation_time_iso,
                                          "err_prefix": "_NULL_", "category": str(error)}
@@ -67,7 +67,6 @@ def get_app_stats(start_date=datetime.datetime.combine(yesterday, datetime.datet
                                          "err_prefix": "_NULL_", "category":"_NULL_"}
                     c.to_logstashJson(errlog_dictionary)
             
-            
             else:
                 error = log.get('status')
                 errlog_dictionary = {"user" : log["user"], "error_msg": str(error), "app_id" : "None", "type": "errorlogs",
@@ -75,10 +74,7 @@ def get_app_stats(start_date=datetime.datetime.combine(yesterday, datetime.datet
                                      "err_prefix": "_NULL_", "category": str(error)}
                 c.to_logstashJson(errlog_dictionary)
             
-            
-            
     print("Error logs added to Logstash for date range: {} to {}".format(start_date, end_date))
-
 
 
 

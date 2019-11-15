@@ -1,7 +1,7 @@
 
 def add_category(app_log):
     category = None
-    while category is None:
+    if category is None:
 
         if app_log.get('status').find('BadStatusLine') > 0:
             category = 'BadStatusLine'
