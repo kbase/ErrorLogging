@@ -8,9 +8,9 @@ print("############################################")
 print("App Stats Upload (UTC): " + str(datetime.datetime.utcnow()))
 start_time = time.time()
 
-if len(sys.argv) == 2:
-    start_date = sys.argv[0]
-    end_date = sys.argv[1]
+if len(sys.argv) == 3:
+    start_date = sys.argv[1]
+    end_date = sys.argv[2]
 
     try:
         datetime.datetime.strptime(start_date, '%m-%d-%Y')
@@ -21,11 +21,12 @@ if len(sys.argv) == 2:
         datetime.datetime.strptime(end_date, '%m-%d-%Y')
     except ValueError:
         raise ValueError("Incorrect end data format, should be MM-DD-YYYY")
+
     pull_app_stats.get_app_stats(start_date, end_date)
     print("Uploading error logs to logstash stats took ",
           time.time() - start_time, " seconds to run")
 
-elif len(sys.argv) == 0:
+elif len(sys.argv) == 1:
     pull_app_stats.get_app_stats()
     print("Uploading error logs to logstash stats took ",
           time.time() - start_time, " seconds to run")
