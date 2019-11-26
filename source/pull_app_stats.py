@@ -36,7 +36,7 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
     metrics = client.sync_call('kb_Metrics.get_app_metrics',
                                [{'epoch_range': [epoch_start, epoch_end]}])
     job_states = metrics[0]['job_states']
-
+    error_logs = []
     delimiters = "{", "}", "''", ":", ",", "2", "message"
     regexPattern = '|'.join(map(re.escape, delimiters))
     for log in job_states:
@@ -52,6 +52,7 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                                          'timestamp': creation_time_iso,
                                          "err_prefix": "_NULL_", "category": str(error)}
 
+                    error_logs.append(errlog_dictionary)
                     c.to_logstashJson(errlog_dictionary)
                 elif ' ' in error:
                     error_parsed = re.split(regexPattern, error)
@@ -63,12 +64,15 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                                          "app_id": log["app_id"], "type": "errorlogs",
                                          "job_id": log["job_id"], 'timestamp': creation_time_iso,
                                          "err_prefix": prefix, "category": category}
+                    error_logs.append(errlog_dictionary)
                     c.to_logstashJson(errlog_dictionary)
+                    
                 else:
                     errlog_dictionary = {"user": log["user"], "error_msg": "_NULL_",
                                          "app_id": log["app_id"], "type": "errorlogs",
                                          "job_id": log["job_id"], 'timestamp': creation_time_iso,
                                          "err_prefix": "_NULL_", "category": "_NULL_"}
+                    error_logs.append(errlog_dictionary)
                     c.to_logstashJson(errlog_dictionary)
             else:
                 error = log.get('status')
@@ -76,6 +80,6 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                                      "app_id": "None", "type": "errorlogs",
                                      "job_id": log["job_id"], 'timestamp': creation_time_iso,
                                      "err_prefix": "_NULL_", "category": str(error)}
-
+                error_logs.append(errlog_dictionary)
                 c.to_logstashJson(errlog_dictionary)
-    print("Error logs added to Logstash for date range: {} to {}".format(start_date, end_date))
+    print("{} Error logs added to Logstash for date range: {} to {}".format(len(error_logs), start_date, end_date))
