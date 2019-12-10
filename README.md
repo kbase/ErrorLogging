@@ -7,11 +7,11 @@ states in the catalog, workspace and execution engine.
 Before being able to run this docker container a ".env" file needs to be made. 
 It should be called .env and should contain the following:
 
-* [USER_TOKEN=<TOKEN>]
-* [SERVICE_WIZARD_URL=<URL>]
-* [ELASTICSEARCH_HOST=<URL>]
+* USER_TOKEN=<TOKEN>
+* SERVICE_WIZARD_URL=<URL>
+* ELASTICSEARCH_HOST=<URL>
 
-Please ask a follow developer for the correct url paths and alter your .env 
+Please ask a fellow developer for the correct url paths and alter your .env 
 file accordingly. 
 
 The script in hooks/build is used to build a docker image named "kbase/errorlogging" 
