@@ -3,6 +3,7 @@
 from biokbase.service.Client import Client as ServiceClient
 import os
 import re
+import pprint
 import datetime
 import client as c
 import error_categories
@@ -46,6 +47,7 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
         if log.get('error'):
             if "app_id" in log:
                 error = log.get('status')
+                non_errorstatuses = ["queued", "in-progress"]
                 if error is None:
                     errlog_dictionary = {"user": log["user"], "error_msg": str(error), "app_id":
                                          "None", "type": "errorlogs", "job_id": log["job_id"],
@@ -66,20 +68,42 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                                          "err_prefix": prefix, "category": category}
                     error_logs.append(errlog_dictionary)
                     c.to_logstashJson(errlog_dictionary)
-                    
-                else:
-                    errlog_dictionary = {"user": log["user"], "error_msg": "_NULL_",
-                                         "app_id": log["app_id"], "type": "errorlogs",
-                                         "job_id": log["job_id"], 'timestamp': creation_time_iso,
-                                         "err_prefix": "_NULL_", "category": "_NULL_"}
-                    error_logs.append(errlog_dictionary)
-                    c.to_logstashJson(errlog_dictionary)
+                elif '' in error:
+                    error.strip()
+                    if len(error) == 2:
+                        errlog_dictionary = {"user" : log["user"], "error_msg": "_NULL_", 
+                                             "app_id" : log["app_id"], "type": "errorlogs",
+                                             "job_id": log["job_id"], 'timestamp': creation_time_iso, 
+                                             "err_prefix": "_NULL_", "category":"_NULL"}
+                        error_logs.append(errlog_dictionary)
+                        c.to_logstashJson(errlog_dictionary)
+                    elif not error:
+                        errlog_dictionary = {"user" : log["user"], "error_msg": "_NULL_", 
+                                             "app_id" : log["app_id"], "type": "errorlogs",
+                                             "job_id": log["job_id"], 'timestamp': creation_time_iso, 
+                                             "err_prefix": "_NULL_", "category": "_NULL_"}
+                        error_logs.append(errlog_dictionary)
+                        c.to_logstashJson(errlog_dictionary)
+                    elif any(element in error for element in non_errorstatuses):
+                        continue
+                    else:
+                        error_parsed = re.split(regexPattern, error)
+                        error_parsed = list(filter(lambda s:any([c.isalnum() for c in s]), error_parsed))
+                        prefix = error_parsed[0]
+                        category = error_categories.add_category(log)
+                        errlog_dictionary = {"user" : log["user"], "error_msg": error, 
+                                             "app_id" : log["app_id"], "type": "errorlogs",
+                                             "job_id": log["job_id"], 'timestamp': creation_time_iso, 
+                                             "err_prefix": prefix, "category": category}
+                        error_logs.append(errlog_dictionary)
+                        c.to_logstashJson(errlog_dictionary)
             else:
                 error = log.get('status')
-                errlog_dictionary = {"user": log["user"], "error_msg": str(error),
-                                     "app_id": "None", "type": "errorlogs",
+                errlog_dictionary = {"user" : log["user"], "error_msg": str(error), 
+                                     "app_id" : "None", "type": "errorlogs",
                                      "job_id": log["job_id"], 'timestamp': creation_time_iso,
                                      "err_prefix": "_NULL_", "category": str(error)}
                 error_logs.append(errlog_dictionary)
                 c.to_logstashJson(errlog_dictionary)
+
     print("{} Error logs added to Logstash for date range: {} to {}".format(len(error_logs), start_date, end_date))
