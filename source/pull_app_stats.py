@@ -57,12 +57,11 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                     error_logs.append(errlog_dictionary)
                     c.to_logstashJson(errlog_dictionary)
                 elif ' ' in error:
-                    error_parsed = re.split(regexPattern, error)
-                    error_parsed = list(filter(lambda s: any([c.isalnum() for c in s]),
-                                        error_parsed))
-                    prefix = error_parsed[0]
+                    prefix = re.split(regexPattern, error)
+                    prefix = list(filter(lambda s:any([c.isalnum() for c in s]), prefix))[0]
+                    error_clean=re.sub( r'([\'"{}><])', '', error).strip()
                     category = error_categories.add_category(log)
-                    errlog_dictionary = {"user": log["user"], "error_msg": error,
+                    errlog_dictionary = {"user": log["user"], "error_msg": error_clean,
                                          "app_id": log["app_id"], "type": "errorlogs",
                                          "job_id": log["job_id"], 'timestamp': creation_time_iso,
                                          "err_prefix": prefix, "category": category}
@@ -87,14 +86,15 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                     elif any(element in error for element in non_errorstatuses):
                         continue
                     else:
-                        error_parsed = re.split(regexPattern, error)
-                        error_parsed = list(filter(lambda s:any([c.isalnum() for c in s]), error_parsed))
-                        prefix = error_parsed[0]
+                        prefix = re.split(regexPattern, error)
+                        prefix = list(filter(lambda s:any([c.isalnum() for c in s]), prefix))[0]
+                        error_clean=re.sub( r'([\'"{}><])', '', error).strip()
                         category = error_categories.add_category(log)
-                        errlog_dictionary = {"user" : log["user"], "error_msg": error, 
+                        errlog_dictionary = {"user" : log["user"], "error_msg": error_clean, 
                                              "app_id" : log["app_id"], "type": "errorlogs",
                                              "job_id": log["job_id"], 'timestamp': creation_time_iso, 
                                              "err_prefix": prefix, "category": category}
+                        print(error_clean)
                         error_logs.append(errlog_dictionary)
                         c.to_logstashJson(errlog_dictionary)
             else:
