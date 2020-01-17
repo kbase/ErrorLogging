@@ -94,7 +94,6 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                                              "app_id" : log["app_id"], "type": "errorlogs",
                                              "job_id": log["job_id"], 'timestamp': creation_time_iso, 
                                              "err_prefix": prefix, "category": category}
-                        print(error_clean)
                         error_logs.append(errlog_dictionary)
                         c.to_logstashJson(errlog_dictionary)
             else:
