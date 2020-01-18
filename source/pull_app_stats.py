@@ -69,7 +69,7 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                     c.to_logstashJson(errlog_dictionary)
                 elif '' in error:
                     error.strip()
-                    if len(error) == 2:
+                    if len(error) == 2 or error == "'()'":
                         errlog_dictionary = {"user" : log["user"], "error_msg": "_NULL_", 
                                              "app_id" : log["app_id"], "type": "errorlogs",
                                              "job_id": log["job_id"], 'timestamp': creation_time_iso, 
