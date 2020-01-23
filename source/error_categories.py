@@ -19,6 +19,8 @@ def add_category(app_log):
              category = 'Compression'
         elif app_log.get('status').find('Job service side error') >= 0:
             category = 'JobService'
+        elif app_log.get('status').find('Kafka') >= 0:
+            category = 'JobService'
         elif app_log.get('status').find('Connection has been shutdown') >= 0:
             category = 'LostConnection'
         elif app_log.get('status').find('No such container') >= 0:
@@ -51,8 +53,6 @@ def add_category(app_log):
             category = 'App Error'
         elif app_log.get('status').find('KBaseReport parameter validation errors') >= 0:
             category = 'App Error'
-        elif app_log.get('status').find('Illegal number of separators') >= 0:
-            category = 'App Error'
 
 
         # User Errors
@@ -77,11 +77,15 @@ def add_category(app_log):
             category = 'User Error'
         elif app_log.get('status').find(' not found in pangenome') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('You must include the following additional Genomes in the Pangenome Calculation') >= 0:
+            category = 'User Error'
         elif app_log.get('status').find('Undefined compound used as reactant') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('assembly method was not specified') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('The input directory does not have any files with one of the following extensions') > 0:
+            category = 'User Error'
+        elif app_log.get('status').find('is not a valid KBase taxon ID.') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('Duplicate objects detected in input') >= 0:
             category = 'User Error'
@@ -103,6 +107,12 @@ def add_category(app_log):
             category = 'User Error'
         elif app_log.get('status').find('You must supply at least one') > 0 or app_log.get('status').find('too many contigs') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('Fasta file is empty.') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('Illegal number of separators') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('Unable to parse version portion of object reference') >= 0:
+            category = 'User Error'
 #       BLAST
         elif app_log.get('status').find('input_one_sequence') >= 0 and app_log.get('status').find('input_one_ref') >= 0:
             category = 'User Error'
@@ -118,7 +128,7 @@ def add_category(app_log):
         elif app_log.get('status').find('Must select at least two models to compare') >= 0:
             category = 'User Error'
 #       Import
-        elif app_log.get('status').find('Both SRA and FASTQ/FASTA file given. Please provide one file type Please only') >= 0:
+        elif app_log.get('status').find('Both SRA and FASTQ/FASTA file given. Please provide one file type') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('reads files do not have an equal number of records') >= 0:
             category = 'User Error'
@@ -149,6 +159,8 @@ def add_category(app_log):
         elif app_log.get('status').find('unable to parse') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('Every feature sequence id must match a fasta sequence id') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('Could not determine alphabet for') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('This FASTA file has non nucleic acid characters') >= 0:
             category = 'User Error'
