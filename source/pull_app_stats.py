@@ -3,6 +3,7 @@
 from biokbase.service.Client import Client as ServiceClient
 import os
 import re
+import ast
 import pprint
 import datetime
 import client as c
@@ -57,10 +58,18 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                     error_logs.append(errlog_dictionary)
                     c.to_logstashJson(errlog_dictionary)
                 elif ' ' in error:
-                    prefix = re.split(regexPattern, error)
-                    prefix = list(filter(lambda s:any([c.isalnum() for c in s]), prefix))[0]
-                    prefix_clean = re.sub( r'([\'"{}\\><])', '', prefix).replace("(", ' ').replace("[", '').strip()
-                    error_clean=re.sub( r'([\'"{}\\><])', '', error).replace("''", '').strip()
+                    # Pull error statement out of tuple as 'prefix'
+                    # Else go through standard error cleaning procedure
+                    if 'No such file or directory' in error:
+                        error_clean=re.sub( r'([\"{}\\><])', '', error).replace("''", '').strip() 
+                        error_tuple = ast.literal_eval(error_clean)
+                        prefix_clean = error_tuple[1]
+                    else:
+                        error_clean=re.sub( r'([\'"{}\\><])', '', error).replace("''", '').strip()
+                        prefix = re.split(regexPattern, error)
+                        prefix = list(filter(lambda s:any([c.isalnum() for c in s]), prefix))[0]
+                        prefix_clean = re.sub( r'([\'"{}\\><])', '', prefix).replace("(", ' ').replace("[", '').strip()
+                    # Get error category and place in error log
                     category = error_categories.add_category(log)
                     errlog_dictionary = {"user": log["user"], "error_msg": error_clean,
                                          "app_id": log["app_id"], "type": "errorlogs",
