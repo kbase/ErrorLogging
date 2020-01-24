@@ -17,7 +17,7 @@ file accordingly.
 The script in hooks/build is used to build a docker image named "kbase/errorlogging" 
 from the current contents of the repo. You can simply run it by:
 ```sh
-$ IMAGE_NAME=error_logging hooks/build
+$ IMAGE_NAME=kbase/errorlogging hooks/build
 ```
 Once it's built, one can run the source directory by the following command:
 ```sh
