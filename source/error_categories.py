@@ -23,6 +23,8 @@ def add_category(app_log):
             category = 'JobService'
         elif app_log.get('status').find('Connection has been shutdown') >= 0:
             category = 'LostConnection'
+        elif app_log.get('status').find('ProtocolError(Connection aborted') >= 0:
+            category = 'LostConnection'
         elif app_log.get('status').find('No such container') >= 0:
             category = 'NoSuchContainer'
         elif app_log.get('status').find('Output file is not found') >= 0:
@@ -30,6 +32,8 @@ def add_category(app_log):
         elif app_log.get('status').find('does not have reference to the assembly object') >= 0:
             category = 'NoAssemblyRef'
         elif app_log.get('status').find('ReadTimeoutError') >= 0:
+            category = 'ReadTimeout'
+        elif app_log.get('status').find('504 Gateway Time-out') >= 0:
             category = 'ReadTimeout'
         elif app_log.get('status').find('Job was cancelled') >= 0 or app_log.get('status').find('job was canceled') >= 0 or app_log.get('status').find('ob was Canceled') >= 0:
             category = 'Canceled'
@@ -63,7 +67,7 @@ def add_category(app_log):
             category = 'NoFileDir'
         elif app_log.get('status').find('Not one protein family member') >= 0:
             category = 'User Error'
-        elif app_log.get('status').find(' is used for forward and reverse') >= 0:
+        elif app_log.get('status').find('is used for forward and reverse') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('duplicate genome display names') >= 0:
             category = 'User Error'
@@ -83,13 +87,19 @@ def add_category(app_log):
             category = 'User Error'
         elif app_log.get('status').find('assembly method was not specified') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('Duplicate gene ID') >= 0:
+            category = 'User Error'
         elif app_log.get('status').find('The input directory does not have any files with one of the following extensions') > 0:
             category = 'User Error'
         elif app_log.get('status').find('is not a valid KBase taxon ID.') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('Duplicate objects detected in input') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('unable to fetch assembly:') >= 0:
+            category = 'User Error'
         elif app_log.get('status').find('may not read workspace') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('There is no taxonomy classification assignment against ') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('cannot be accessed') >= 0  and app_log.get('status').find('Workspace') >= 0  and app_log.get('status').find('deleted') >= 0:
             category = 'User Error'
@@ -120,6 +130,8 @@ def add_category(app_log):
             category = 'User Error'
         elif app_log.get('status').find('blast') >= 0 and app_log.get('status').find('Query is Empty') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('No sequence found in fasta_str') >= 0:
+            category = 'User Error'
 #       Modeling
         elif app_log.get('status').find('not a valid EXCEL nor TSV file') >= 0:
             category = 'User Error'
@@ -134,11 +146,15 @@ def add_category(app_log):
             category = 'User Error'
         elif app_log.get('status').find('File is not a zip file') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('utf-8') >= 0:
+            category = 'User Error'
         elif app_log.get('status').find('Error running command: pigz') >= 0:
             category = 'User Error'
         elif app_log.get('status').find(' is not a FASTQ file') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('Cannot connect to URL') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('Invalid FTP Link') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('Plasmid assembly requires that one') >= 0:
             category = 'User Error'
@@ -147,6 +163,8 @@ def add_category(app_log):
         elif app_log.get('status').find('Reading FASTQ record failed') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('Invalid FASTQ') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('missing FASTQ/FASTA file') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('line count is not divisible by') >= 0:
             category = 'User Error'
@@ -160,6 +178,8 @@ def add_category(app_log):
             category = 'User Error'
         elif app_log.get('status').find('Every feature sequence id must match a fasta sequence id') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('Did not recognise the LOCUS line layout') >= 0:
+            category = 'User Error'
         elif app_log.get('status').find('Could not determine alphabet for') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('This FASTA file has non nucleic acid characters') >= 0:
@@ -171,6 +191,13 @@ def add_category(app_log):
             category = 'User Error'
         elif app_log.get('status').find('FASTA header') >= 0 and app_log.get('status').find(
                 'appears more than once in the file') >= 0:
+            category = 'User Error'
+#		Other apps
+        elif app_log.get('status').find('missing or empty krona input file') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('FeatureSet has multiple reference Genomes') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('You must enter either an input genome or input reads') >= 0:
             category = 'User Error'
         else:
             category = app_log.get('method')
