@@ -1,6 +1,6 @@
 FROM kbase/narrative:py3-update as narrative
 
-FROM python:3.7-slim
+FROM python:3.6-slim
 
 # Build arguments passed into the docker command for image metadata
 ARG BUILD_DATE
@@ -17,11 +17,13 @@ RUN mkdir -p /kb/runtime
 # but kind of guarantees that anything that runs in a narrative python setup
 # will run here as well
 COPY --from=narrative /kb/runtime/lib /kb/runtime/lib
+COPY --from=narrative /kb/dev_container/narrative/src/dist/biokbase-0.0.1-py3.6.egg /tmp/biokbase-0.0.1-py3.6.egg
 
 COPY bin /root/bin
 RUN cd /root/bin && wget https://github.com/kbase/dockerize/raw/master/dockerize-linux-amd64-v0.6.1.tar.gz && \
     tar xzf dockerize-linux-amd64-v0.6.1.tar.gz && \
-    rm dockerize-linux-amd64-v0.6.1.tar.gz
+    rm dockerize-linux-amd64-v0.6.1.tar.gz && \
+    easy_install --no-deps /tmp/biokbase-0.0.1-py3.6.egg
 
 COPY source /root/source
 WORKDIR /root/source
@@ -32,8 +34,7 @@ WORKDIR /root/source
 # the default search path so that the eggs are picked up by this container's
 # python interpreter
 
-RUN sed 's/^\./\/kb\/runtime\/lib\/python3.7\/site-packages/' /kb/runtime/lib/python3.7/site-packages/easy-install.pth >/usr/local/lib/python3.7/site-packages/kbase.pth
-ENV PYTHONPATH=/kb/runtime/lib/python3.7/site-packages/:/kb/runtime/lib/python3.6/site-packages/
+ENV PYTHONPATH=/kb/runtime/lib/python3.6/site-packages/
 ENV PATH="/root/bin:/root/source:${PATH}"
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
