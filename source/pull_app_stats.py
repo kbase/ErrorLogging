@@ -61,9 +61,12 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                     # Pull error statement out of tuple as 'prefix'
                     # Else go through standard error cleaning procedure
                     if 'No such file or directory' in error:
-                        error_clean=re.sub( r'([\"{}\\><])', '', error).replace("''", '').strip() 
-                        error_tuple = ast.literal_eval(error_clean)
-                        prefix_clean = error_tuple[1]
+                        error_clean = re.sub( r'([\"{}\\><])', '', error).replace("''", '').strip()
+                        try:
+                            error_tuple = ast.literal_eval(error_clean)
+                            prefix_clean = error_tuple[1]
+                        except:
+                            prefix_clean = 'No such file or directory'
                     else:
                         error_clean=re.sub( r'([\'"{}\\><])', '', error).replace("''", '').strip()
                         prefix = re.split(regexPattern, error)
