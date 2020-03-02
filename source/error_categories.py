@@ -77,6 +77,10 @@ def add_category(app_log):
             category = 'User Error'
         elif app_log.get('status').find('MISSING DOMAIN ANNOTATION FOR') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('ALL genomes have no matching Domain Annotation') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('There is no taxonomy classification assignment against') >= 0:
+            category = 'User Error'
         elif app_log.get('status').find('There are no protein translations in genome') >= 0 or app_log.get('status').find('The genome does not contain any CDSs') >= 0:
             category = 'User Error'
         elif app_log.get('status').find(' not found in pangenome') >= 0:
@@ -84,8 +88,6 @@ def add_category(app_log):
         elif app_log.get('status').find('You must include the following additional Genomes in the Pangenome Calculation') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('Undefined compound used as reactant') >= 0:
-            category = 'User Error'
-        elif app_log.get('status').find('assembly method was not specified') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('Duplicate gene ID') >= 0:
             category = 'User Error'
@@ -99,6 +101,10 @@ def add_category(app_log):
             category = 'User Error'
         elif app_log.get('status').find('may not read workspace') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('No bins produced - skipping the creation') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('Must configure at least one of 5 or 3 adapter') >= 0:
+            category = 'User Error'
         elif app_log.get('status').find('There is no taxonomy classification assignment against ') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('cannot be accessed') >= 0  and app_log.get('status').find('Workspace') >= 0  and app_log.get('status').find('deleted') >= 0:
@@ -109,6 +115,10 @@ def add_category(app_log):
             category = 'User Error'
 #        Assembly
         elif app_log.get('status').find('There are no contigs to save') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('assembly method was not specified') >= 0:
+            category = 'User Error'
+        elif app_log.get('status').find('takes 2 positional arguments but 3 were given') >= 0:
             category = 'User Error'
 #        Annotation
         elif app_log.get('status').find('Too many contigs') >= 0:
@@ -142,6 +152,8 @@ def add_category(app_log):
 #       Import
         elif app_log.get('status').find('Both SRA and FASTQ/FASTA file given. Please provide one file type') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('FASTQ/FASTA input file type selected. But missing FASTQ/FASTA file') >= 0:
++            category = 'User Error'
         elif app_log.get('status').find('reads files do not have an equal number of records') >= 0:
             category = 'User Error'
         elif app_log.get('status').find('File is not a zip file') >= 0:
@@ -192,6 +204,8 @@ def add_category(app_log):
         elif app_log.get('status').find('FASTA header') >= 0 and app_log.get('status').find(
                 'appears more than once in the file') >= 0:
             category = 'User Error'
+        elif app_log.get('status').find('Duplicate gene ID') >= 0:
++            category = 'User Error'
 #		Other apps
         elif app_log.get('status').find('missing or empty krona input file') >= 0:
             category = 'User Error'
@@ -201,7 +215,7 @@ def add_category(app_log):
             category = 'User Error'
         else:
             category = app_log.get('method')
-            
+
         app_log['status'] = app_log.get('status').replace("\n", ' \\n ')  # Force a single line so list can be sorted
         app_log['status'] = app_log.get('status').replace("\r", ' \\r ')
 
