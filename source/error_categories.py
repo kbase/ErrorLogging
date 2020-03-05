@@ -9,8 +9,8 @@ def add_category(app_log):
             category = 'NoSpace'
         elif app_log.get('status').find('exit code is 137') >= 0:
             category = 'Exit 137'
-        elif app_log.get('status').find('BadstatusLine') >= 0:
-            category = 'BadstatusLine'
+        elif app_log.get('status').find('BadStatusLine') >= 0:
+            category = 'BadStatusLine'
         elif app_log.get('status').find('Bad Gateway') >= 0:
             category = 'BadServer'
         elif app_log.get('status').find('NJSW failed') >= 0:
@@ -23,7 +23,7 @@ def add_category(app_log):
             category = 'JobService'
         elif app_log.get('status').find('Connection has been shutdown') >= 0:
             category = 'LostConnection'
-        elif app_log.get('status').find('Protocolstatus(Connection aborted') >= 0:
+        elif app_log.get('status').find('ProtocolError(Connection aborted') >= 0:
             category = 'LostConnection'
         elif app_log.get('status').find('No such container') >= 0:
             category = 'NoSuchContainer'
@@ -31,7 +31,7 @@ def add_category(app_log):
             category = 'NoOutput'
         elif app_log.get('status').find('does not have reference to the assembly object') >= 0:
             category = 'NoAssemblyRef'
-        elif app_log.get('status').find('ReadTimeoutstatus') >= 0:
+        elif app_log.get('status').find('ReadTimeError') >= 0:
             category = 'ReadTimeout'
         elif app_log.get('status').find('504 Gateway Time-out') >= 0:
             category = 'ReadTimeout'
@@ -41,23 +41,23 @@ def add_category(app_log):
 
         # App-specific statuss
         elif app_log.get('status').find('call_features_rRNA_SEED') >= 0:
-            category = 'App status'
+            category = 'App Error'
         elif app_log.get('status').find('Model likely contains numerical instability') >= 0:
-            category = 'App status'
+            category = 'App Error'
         elif app_log.get('status').find('Object doesnt have required fields') >= 0:
-            category = 'App status'
+            category = 'App Error'
         elif app_log.get('status').find('has invalid provenance reference') >= 0:
-            category = 'App status'
+            category = 'App Error'
         elif app_log.get('status').find('Mandatory arguments missing') >= 0:
-            category = 'App status'
+            category = 'App Error'
         elif app_log.get('status').find('Authentication required for AbstractHandle') >= 0:
-            category = 'App status'
+            category = 'App Error'
         elif app_log.get('status').find("Can't locate object method quality via package") >= 0:
-            category = 'App status'
+            category = 'App Error'
         elif app_log.get('status').find("Can't use an undefined value as an ARRAY reference") >= 0:
-            category = 'App status'
+            category = 'App Error'
         elif app_log.get('status').find('KBaseReport parameter validation statuss') >= 0:
-            category = 'App status'
+            category = 'App Error'
 
         # User statuss
         elif app_log.get('status').find('Illegal character in object name') >= 0:
@@ -163,9 +163,9 @@ def add_category(app_log):
             category = 'User status'
         elif app_log.get('status').find('File is not a zip file') >= 0:
             category = 'User status'
-        elif app_log.get('status').find('utf-8') >= 0: \
+        elif app_log.get('status').find('utf-8') >= 0:
                 category = 'User status'
-        elif app_log.get('status').find('status running command: pigz') >= 0:
+        elif app_log.get('status').find('error running command: pigz') >= 0:
             category = 'User status'
         elif app_log.get('status').find(' is not a FASTQ file') >= 0:
             category = 'User status'
