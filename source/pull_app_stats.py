@@ -50,8 +50,10 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
         date = d_truncated.date()
         if log.get('error'):
             # Initiate dictionary 
-            errlog_dictionary = {"user" : log["user"], "error_msg": "_NULL_", "app_id" : "None", "type": "errorlogs",
-                                "job_id": log["job_id"], 'timestamp': creation_time_iso, "err_prefix": "_NULL_", "category": "_NULL_"}
+            errlog_dictionary = {"user": log["user"], "error_msg": "_NULL_",
+                                 "app_id": "None", "type": "errorlogs", "date": date,
+                                "job_id": log["job_id"], 'timestamp': creation_time_iso,
+                                 "err_prefix": "_NULL_", "category": "_NULL_"}
             if "app_id" in log:
                 # get error log for app and skip 'queued' or 'in-progress' jobs
                 error = log.get('status')
