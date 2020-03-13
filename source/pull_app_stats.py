@@ -46,8 +46,7 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
         # Format date to ISO and calender date
         creation_time_iso = datetime.datetime.utcfromtimestamp(millisec_crtime).isoformat()
         dt = datetime.datetime.fromtimestamp(millisec_crtime)
-        d_truncated = datetime.datetime(dt.year, dt.month, dt.day)
-        date = d_truncated.date()
+        date = datetime.datetime(dt.year, dt.month, dt.day).strftime("%Y-%m-%d")
         if log.get('error'):
             # Initiate dictionary 
             errlog_dictionary = {"user": log["user"], "error_msg": "_NULL_",
