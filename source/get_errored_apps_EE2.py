@@ -1,10 +1,12 @@
+from installed_clients2.execution_engine2Client import execution_engine2 as EE2Client
 import biokbase.narrative.clients as clients
-ee2 = clients.get('execution_engine2')
+import os
 import datetime
 import client as c
 import filter
 import pprint
-
+token = os.environ['USER_TOKEN']
+ee2 = EE2Client(url='https://kbase.us/services/ee2',token=token)
 yesterday = (datetime.date.today() - datetime.timedelta(days=1))
 
 def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.datetime.min.time()),
@@ -27,14 +29,16 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
     params = {'start_time': epoch_start, 'end_time': epoch_end, 'filter': ['status=error'], 'ascending': 0}
     stats = ee2.check_jobs_date_range_for_all(params=params)
     for errored in stats['jobs']:
+        pprint.pprint(errored)
         # Convert timestamps from milliseconds to seconds.
         millisec_crtime = errored["created"] / 1000.0
         # Format date to ISO and calender date
         creation_time_iso = datetime.datetime.utcfromtimestamp(millisec_crtime).isoformat()
+        dt = datetime.datetime.fromtimestamp(millisec_crtime)
         errlog_dictionary = {"user": errored["user"], "error": '_NULL_',
-                             'full_error_output': '_NULL_', 'name_of_error': '_NULL_',
+                             'traceback': '_NULL_', 'name_of_error': '_NULL_',
                              'workspace_id': '_NULL_', "app_id": "_NULL_",
-                             'type': 'EE2errorlogs', "job_id": errored["job_id"],
+                             'type': 'ee2errorlogs', "job_id": errored["job_id"],
                              'timestamp': creation_time_iso, "err_prefix": "_NULL_",
                              'error_code': '_NULL_', 'obj_references': "_NULL_"}
         if 'wsid' in errored.keys():
@@ -48,8 +52,11 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
             errlog_dictionary['app_id'] = app_id
             if 'params' in errored['job_input'].keys():
                 errlog_dictionary['obj_references'] = errored['job_input']['params']
-            if 'job_output' in errored.keys():
-                error_msg = errored['job_output']['error']['message']
+            if 'job_output' in errored.keys() and errored['job_output']:
+                try:
+                    error_msg = errored['job_output']['error']['message']
+                except:
+                    error_msg = errored['msg']
                 full_error = errored['job_output']['error']['error']
                 name = errored['job_output']['error']['name']
                 code = errored['job_output']['error']['code']
@@ -62,6 +69,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
             errlog_dictionary['full_error_output'] = full_error
             errlog_dictionary['name_of_error'] = name
             errlog_dictionary['error_code'] = code
+            
             formatted_error_dictionary = filter.filter_error(error_msg, errlog_dictionary)
             job_array.append(formatted_error_dictionary)
             c.to_logstashJson(errlog_dictionary)
