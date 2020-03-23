@@ -7,7 +7,13 @@ def filter_error(error, errlog_dictionary):
 
     delimiters = "{", "}", "''", ":", ",", "message"
     regexPattern = '|'.join(map(re.escape, delimiters))
-    if error[0] == error[-1] == "'":
+    print("HERE----------")
+    print(error)
+    if not error:
+        errlog_dictionary["error"] = "_NULL_"
+        errlog_dictionary["err_prefix"] = "_NULL_"
+        errlog_dictionary["category"] = "_NULL_"
+    elif error[0] == error[-1] == "'":
         if len(error) == 2:
             errlog_dictionary["error"] = "_NULL_"
             errlog_dictionary["err_prefix"] = "_NULL_"
@@ -33,8 +39,12 @@ def filter_error(error, errlog_dictionary):
             err_prefix = re.sub(r'([\'"{}\\><*])', '', prefix).replace("(", ' ').replace("[", '').strip()
         # Error can be tuple wrapped in string
         elif error[0] == '(':
+            print("HERE2")
             error_tuple = ast.literal_eval(error)
             err_prefix = error_tuple[1]
+            if isinstance(err_prefix, (bytes)) and isinstance(error, (bytes)):
+                error = str(error)
+                err_prefix = str(err_prefix)
         else:
             prefix = re.split(regexPattern, error)
             prefix = list(filter(lambda s: any([c.isalnum() for c in s]), prefix))[0]
