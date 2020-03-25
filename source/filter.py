@@ -7,8 +7,6 @@ def filter_error(error, errlog_dictionary):
 
     delimiters = "{", "}", "''", ":", ",", "message"
     regexPattern = '|'.join(map(re.escape, delimiters))
-    print("HERE----------")
-    print(error)
     if not error:
         errlog_dictionary["error"] = "_NULL_"
         errlog_dictionary["err_prefix"] = "_NULL_"
@@ -39,12 +37,12 @@ def filter_error(error, errlog_dictionary):
             err_prefix = re.sub(r'([\'"{}\\><*])', '', prefix).replace("(", ' ').replace("[", '').strip()
         # Error can be tuple wrapped in string
         elif error[0] == '(':
-            print("HERE2")
-            error_tuple = ast.literal_eval(error)
+            error_tuple = ast.literal_eval(str(error))
             err_prefix = error_tuple[1]
-            if isinstance(err_prefix, (bytes)) and isinstance(error, (bytes)):
-                error = str(error)
+            if isinstance(err_prefix, (bytes)):
                 err_prefix = str(err_prefix)
+            if isinstance(error, (bytes)):
+                error = str(error)
         else:
             prefix = re.split(regexPattern, error)
             prefix = list(filter(lambda s: any([c.isalnum() for c in s]), prefix))[0]
@@ -55,7 +53,6 @@ def filter_error(error, errlog_dictionary):
         errlog_dictionary["err_prefix"] = err_prefix
         category = error_categories_EE2.add_category(errlog_dictionary)
         errlog_dictionary["category"] = category
-
     else:
         # Error can be empty tuple
         if len(error) == 2:
@@ -68,10 +65,12 @@ def filter_error(error, errlog_dictionary):
         else:
             prefix = re.split(regexPattern, error)
             prefix = list(filter(lambda s: any([c.isalnum() for c in s]), prefix))[0]
-            err_prefix = re.sub(r'([\'"{}\\><*])', '', prefix).replace("(", ' ').replace("[", '').replace("]",'').strip()
+            err_prefix = re.sub(r'([\'"{}\\><*])', '', prefix).replace("(", ' ').replace("[", '').replace("]",
+                                                                                                          '').strip()
             # Update error dictionary for error and append to logs
             errlog_dictionary["error"] = error
             errlog_dictionary["err_prefix"] = err_prefix
             category = error_categories_EE2.add_category(errlog_dictionary)
             errlog_dictionary["category"] = category
     return errlog_dictionary
+          
