@@ -29,7 +29,6 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
     params = {'start_time': epoch_start, 'end_time': epoch_end, 'filter': ['status=error'], 'ascending': 0}
     stats = ee2.check_jobs_date_range_for_all(params=params)
     for errored in stats['jobs']:
-        pprint.pprint(errored)
         # Convert timestamps from milliseconds to seconds.
         millisec_crtime = errored["created"] / 1000.0
         # Format date to ISO and calender date
@@ -66,7 +65,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                 name = errored['error']['name']
                 code = errored['error']['code']
             errlog_dictionary['error'] = error_msg
-            errlog_dictionary['full_error_output'] = full_error
+            errlog_dictionary['traceback'] = full_error
             errlog_dictionary['name_of_error'] = name
             errlog_dictionary['error_code'] = code
             
