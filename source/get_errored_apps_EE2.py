@@ -1,10 +1,8 @@
 from installed_clients2.execution_engine2Client import execution_engine2 as EE2Client
-import biokbase.narrative.clients as clients
 import os
 import datetime
 import client as c
 import filter
-import pprint
 token = os.environ['USER_TOKEN']
 ee2 = EE2Client(url='https://kbase.us/services/ee2',token=token)
 yesterday = (datetime.date.today() - datetime.timedelta(days=1))
@@ -33,7 +31,6 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
         millisec_crtime = errored["created"] / 1000.0
         # Format date to ISO and calender date
         creation_time_iso = datetime.datetime.utcfromtimestamp(millisec_crtime).isoformat()
-        dt = datetime.datetime.fromtimestamp(millisec_crtime)
         errlog_dictionary = {"user": errored["user"], "error": '_NULL_',
                              'traceback': '_NULL_', 'name_of_error': '_NULL_',
                              'workspace_id': '_NULL_', "app_id": "_NULL_",

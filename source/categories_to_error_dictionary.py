@@ -1,4 +1,11 @@
 def categories_to_errors_dict():
+    """Categories to error dictionary function maps common error substrings to categories.
+        The categories are keys in the dictionary and the values are arrays of strings
+        or arrays of list.
+        Some error categories, such as User Errors, has many subcategories. Thus,
+         each subcategory has its own list, but each list is placed in the larger
+         User Error array that maps to the key User Error.
+         This function returns a dictionary used to organize error logs"""
     # App Errors
     app_errors = ["call_features_rRNA_SEED",
                   "Model likely contains numerical instability",
@@ -35,11 +42,9 @@ def categories_to_errors_dict():
                            "cannot be accessed",
                            "Object #",
                            "does not exist in the supplied genome"]
-
     assembly_user_errors = ["There are no contigs to save",
                             "assembly method was not specified",
                             "takes 2 positional arguments but 3 were given"]
-
     annotation_user_errors = ["Too many contigs",
                               "You must run the RAST SEED Annotation App",
                               "You must supply at least one",
@@ -92,16 +97,16 @@ def categories_to_errors_dict():
     server = ["500 Server closed connection"]
     no_space = ["exit code is 123", "No space left on device"]
     exit = ["exit code is 137"]
-    BadStatus = ["BadStatusLine"]
-    BadServer = ["Bad Gateway", "NJSW failed"]
+    badstatus = ["BadStatusLine"]
+    badserver = ["Bad Gateway", "NJSW failed"]
     compression = ["compression tyep 9"]
-    Job_Service = ['Kafka', 'Job service side status']
-    Lost_Connection = ["ProtocolError(Connection aborated)", "Connection has been shutdown"]
-    NoSuchContainer = ["No such container"]
-    ReadTimeout = ["ReadTimeError", "504 Gateway Time-out"]
-    NoOutput = ["Output file is not found"]
-    Canceled = ["Job was cancelled"]
-    NoAssemblyRef = ["does not have reference to the assembly object"]
+    job_service = ['Kafka', 'Job service side status']
+    lost_connection = ["ProtocolError(Connection aborated)", "Connection has been shutdown"]
+    nosuchcontainer = ["No such container"]
+    readtimeout = ["ReadTimeError", "504 Gateway Time-out"]
+    nooutput = ["Output file is not found"]
+    canceled = ["Job was cancelled"]
+    noassemblyref = ["does not have reference to the assembly object"]
     user_errors = [general_user_errors, blast_user_errors,
                    annotation_user_errors, modeling_user_errors,
                    assembly_user_errors, other_apps_user_errors, import_user_errors]
@@ -112,13 +117,14 @@ def categories_to_errors_dict():
                         '500': server,
                         "NoSpace": no_space,
                         "Exit 137": exit,
-                        "BadStatusLine": BadStatus,
-                        'BadServer': BadServer,
+                        "BadStatusLine": badstatus,
+                        'BadServer': badserver,
                         "Compression": compression,
-                        "JobService": Job_Service,
-                        "LostConnection": Lost_Connection,
-                        'NoSuchContainer': NoSuchContainer,
-                        "NoOutput": NoOutput,
-                        "Canceled": Canceled,
-                        "NoAssemblyRef": NoAssemblyRef}
+                        "JobService": job_service,
+                        "LostConnection": lost_connection,
+                        'NoSuchContainer': nosuchcontainer,
+                        "NoOutput": nooutput,
+                        "Canceled": canceled,
+                        "NoAssemblyRef": noassemblyref,
+                        "ReadTimeout": readtimeout}
     return error_dictionary
