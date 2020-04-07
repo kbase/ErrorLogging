@@ -50,29 +50,25 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                 errlog_dictionary['obj_references'] = errored['job_input']['params']
             if 'job_output' in errored.keys() and errored['job_output']:
                 try:
-                    error_msg = errored['job_output']['error']['message']
+                    errlog_dictionary['error'] = errored['job_output']['error']['message']
                 except:
-                    error_msg = errored['msg']
-                full_error = errored['job_output']['error']['error']
-                name = errored['job_output']['error']['name']
-                code = errored['job_output']['error']['code']
+                    errlog_dictionary['error'] = errored['msg']
+                errlog_dictionary['traceback'] = errored['job_output']['error']['error']
+                errlog_dictionary['name_of_error'] = errored['job_output']['error']['name']
+                errlog_dictionary['error_code'] = errored['job_output']['error']['code']
             elif 'error' in errored.keys():
-                error_msg = errored['error']['message']
-                full_error = errored['error']['error']
-                name = errored['error']['name']
-                code = errored['error']['code']
-            errlog_dictionary['error'] = error_msg
-            errlog_dictionary['traceback'] = full_error
-            errlog_dictionary['name_of_error'] = name
-            errlog_dictionary['error_code'] = code
-            
+                errlog_dictionary['error'] = errored['error']['message']
+                errlog_dictionary['traceback'] = errored['error']['error']
+                errlog_dictionary['name_of_error'] = errored['error']['name']
+                errlog_dictionary['error_code'] = errored['error']['code']
+            error_msg = errlog_dictionary['error']
             formatted_error_dictionary = filter.filter_error(error_msg, errlog_dictionary)
             job_array.append(formatted_error_dictionary)
             c.to_logstashJson(errlog_dictionary)
         else:
             if 'errormsg' in errored.keys():
-                error_msg = errored['errormsg']
-                full_error = errored['errormsg']
+                error_msg = errlog_dictionary['error'] = errored['errormsg']
+                errlog_dictionary['traceback'] = errored['errormsg']
                 formatted_error_dictionary = filter.filter_error(error_msg, errlog_dictionary)
                 job_array.append(formatted_error_dictionary)
                 c.to_logstashJson(errlog_dictionary)
