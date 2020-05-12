@@ -58,12 +58,14 @@ def get_app_stats(start_date=start_date_default, end_date=end_date_default):
                 if error:
                     formatted_error_dictionary = filter.filter_error(error, errlog_dictionary, log)
                     error_logs.append(formatted_error_dictionary)
+                    c.to_logstash_json(formatted_error_dictionary)
                 else:
                     error_logs.append(errlog_dictionary)
+                    c.to_logstash_json(errlog_dictionary)
             else:
                 errlog_dictionary['app_id'] = 'None'
                 error_logs.append(errlog_dictionary)
+                c.to_logstash_json(errlog_dictionary)
                 
                     
     print("{} Error logs added to Logstash for date range: {} to {}".format(len(error_logs), start_date, end_date))
-    pprint.pprint(error_logs)
