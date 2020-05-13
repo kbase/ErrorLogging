@@ -2,8 +2,7 @@ import socket
 import json
 import os 
 host = os.environ["ELASTICSEARCH_HOST"]
-
-def to_logstashJson(log_d):
+def to_logstash_json(log_d):
 
     port = 9000
     json_data = json.dumps(log_d)
