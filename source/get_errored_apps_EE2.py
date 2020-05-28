@@ -3,7 +3,7 @@ import os
 import datetime
 import client as c
 import filter
-import check_keys
+import check_keys_with_wsid
 token = os.environ['USER_TOKEN']
 ee2 = EE2Client(url='https://kbase.us/services/ee2',token=token)
 yesterday = (datetime.date.today() - datetime.timedelta(days=1))
@@ -40,7 +40,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                              'timestamp': creation_time_iso, "err_prefix": "_NULL_",
                              'error_code': '_NULL_', 'obj_references': "_NULL_"}
         if 'wsid' in errored.keys():
-            filled_error_dictionary = check_keys.check_keys_with_wsid(errored, errlog_dictionary)
+            filled_error_dictionary = check_keys_with_wsid.check_keys_with_wsid(errored, errlog_dictionary)
             error_msg = filled_error_dictionary['error']
             formatted_error_dictionary = filter.filter_error(error_msg, filled_error_dictionary)
             job_array.append(formatted_error_dictionary)

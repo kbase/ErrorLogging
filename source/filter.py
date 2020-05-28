@@ -3,7 +3,7 @@ from filter_single_quote import filter_single
 from filter_double_quote import filter_double
 from filter_noquote_tuple import filter_tuple
 
-def filter_error(error, errlog_dictionary, log):
+def filter_error(error, errlog_dictionary):
     # Initiate format variables
     delimiters = "{", "}", "''", ":", ",", "message"
     regex_pattern = '|'.join(map(re.escape, delimiters))
@@ -16,10 +16,10 @@ def filter_error(error, errlog_dictionary, log):
         errlog_dictionary["category"] = "_NULL_"
     # Filter defined per error format
     elif error[0] == error[-1] == "'":
-        errlog_dictionary = filter_single(errlog_dictionary, error, regex_pattern, symbols_to_sub, log)
+        errlog_dictionary = filter_single(errlog_dictionary, error, regex_pattern, symbols_to_sub)
     elif error[0] == error[-1] == '"':
-        errlog_dictionary = filter_double(errlog_dictionary, error, regex_pattern, symbols_to_sub, log)
+        errlog_dictionary = filter_double(errlog_dictionary, error, regex_pattern, symbols_to_sub)
     else:
-        errlog_dictionary = filter_tuple(errlog_dictionary, error, regex_pattern, symbols_to_sub, log)
+        errlog_dictionary = filter_tuple(errlog_dictionary, error, regex_pattern, symbols_to_sub)
     return errlog_dictionary
           

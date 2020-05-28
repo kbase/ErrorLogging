@@ -1,6 +1,6 @@
 # UploadErrorLogs
 #
-import pull_app_stats
+import get_errored_apps_EE2
 import time
 import sys
 import datetime
@@ -22,12 +22,12 @@ if len(sys.argv) == 3:
     except ValueError:
         raise ValueError("Incorrect end data format, should be MM-DD-YYYY")
 
-    pull_app_stats.get_app_stats(start_date, end_date)
+    get_errored_apps_EE2.get_errored_apps(start_date, end_date)
     print("Uploading error logs to logstash stats took ",
           time.time() - start_time, " seconds to run")
 
 elif len(sys.argv) == 1:
-    pull_app_stats.get_app_stats()
+    get_errored_apps_EE2.get_errored_apps()
     print("Uploading error logs to logstash stats took ",
           time.time() - start_time, " seconds to run")
 

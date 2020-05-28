@@ -23,4 +23,7 @@ def check_keys_with_wsid(errored, errlog_dictionary):
             errlog_dictionary['traceback'] = errored['error']['error']
             errlog_dictionary['name_of_error'] = errored['error']['name']
             errlog_dictionary['error_code'] = errored['error']['code']
+        elif 'errormsg' in errored.keys():
+            errlog_dictionary['error'] = errored['errormsg']
+            errlog_dictionary['error_code'] = errored['error_code']
     return errlog_dictionary

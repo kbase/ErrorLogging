@@ -1,6 +1,6 @@
 
 
-from source.config_to_error_dictionaries import config_to_dictionary
+from config_to_error_dictionaries import config_to_dictionary
 
 
 def add_category(error_dict):
