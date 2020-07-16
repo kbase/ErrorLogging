@@ -1,5 +1,7 @@
 # UploadErrorLogs
-#
+# This Function is the main uploader function that the cron job run. It can dates as system arguments (sys.argv)
+# The first sys.argv is the function called the 2nd and 3rd are the start and end dates respectively
+# If sys.argv is just the function then it runs for yesterday
 import get_errored_apps_EE2
 import time
 import sys

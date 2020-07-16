@@ -13,6 +13,7 @@ def add_category(error_dict):
         error_values_all = error_dict['error'] + error_dict['traceback']
     else:
         error_values_all = error_dict['traceback']
+    # Categories is a helper function that takes the category listing the Error.ini and returns a dict from key to category
     categories = config_to_dictionary()
     for category, error_array in categories.items():
         # Dictionary values can be either an array of strings or an array of lists
