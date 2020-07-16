@@ -1,7 +1,9 @@
 # KBase Error Logging
 
 This repository contains code for gathering and uploading KBase app errors from user job
-states in the catalog, workspace and execution engine. 
+states in the catalog, workspace and execution engine. This repository is run through a cron job every night.
+The main function in the repo is get_errored_apps_EE2. 
+The cron job call the upload_errorlogs function that calls the main get_errored_apps_EE2 function. 
 
 ## Getting Started
 Before being able to run this docker container a ".env" file needs to be made. 

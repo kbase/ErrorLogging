@@ -3,7 +3,7 @@ import os
 import datetime
 import client as c
 import filter
-import check_keys
+import check_keys_with_wsid
 token = os.environ['USER_TOKEN']
 ee2 = EE2Client(url='https://kbase.us/services/ee2',token=token)
 yesterday = (datetime.date.today() - datetime.timedelta(days=1))
@@ -11,6 +11,10 @@ yesterday = (datetime.date.today() - datetime.timedelta(days=1))
 
 def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.datetime.min.time()),
                      end_date=datetime.datetime.combine(yesterday, datetime.datetime.max.time())):
+    """This function submits error logs to Logstash. First a call to EE2 is made and app logs that have a job state of 'error' are collected
+    At which point a dictionary is initiated which contains basic info that needs to filled in by info from the errored app log.
+    After making sure basic fields exist, such as work space id or 'wsid', the beginning dictionary and the errored app log are sent to filter.filter_error so other keys can be checked and the error itself categorized and made readable."""
+
     if isinstance(start_date, str):
         # Format date strings to datetime objects
         start_date_dt = datetime.datetime.strptime(start_date, '%m-%d-%Y')
@@ -25,31 +29,38 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
         # datetime to epoch. Epoch format needed for elastic query
         epoch_start = int(start_date.strftime('%s')) * 1000
         epoch_end = int(end_date.strftime('%s')) * 1000
+    # Initiate array and pull apps with an error status from EE2
     job_array = []
     params = {'start_time': epoch_start, 'end_time': epoch_end, 'filter': ['status=error'], 'ascending': 0}
     stats = ee2.check_jobs_date_range_for_all(params=params)
+    # Iterate through 'errored' jobs/apps
     for errored in stats['jobs']:
         # Convert timestamps from milliseconds to seconds.
         millisec_crtime = errored["created"] / 1000.0
         # Format date to ISO and calender date
         creation_time_iso = datetime.datetime.utcfromtimestamp(millisec_crtime).isoformat()
+        # Create basic struct of error dictionary
         errlog_dictionary = {"user": errored["user"], "error": '_NULL_',
                              'traceback': '_NULL_', 'name_of_error': '_NULL_',
                              'workspace_id': '_NULL_', "app_id": "_NULL_",
                              'type': 'ee2errorlogs', "job_id": errored["job_id"],
                              'timestamp': creation_time_iso, "err_prefix": "_NULL_",
                              'error_code': '_NULL_', 'obj_references': "_NULL_"}
+        # Check if workspace ID is present in EE2 log for app
         if 'wsid' in errored.keys():
-            filled_error_dictionary = check_keys.check_keys_with_wsid(errored, errlog_dictionary)
+            # Send the error to helper functions for formatting
+            filled_error_dictionary = check_keys_with_wsid.check_keys_with_wsid(errored, errlog_dictionary)
             error_msg = filled_error_dictionary['error']
             formatted_error_dictionary = filter.filter_error(error_msg, filled_error_dictionary)
             job_array.append(formatted_error_dictionary)
             c.to_logstash_json(errlog_dictionary)
         else:
+            # Check if the errormsg key even exist in the log
             if 'errormsg' in errored.keys():
                 error_msg = errlog_dictionary['error'] = errored['errormsg']
                 errlog_dictionary['traceback'] = errored['errormsg']
                 formatted_error_dictionary = filter.filter_error(error_msg, errlog_dictionary)
+                # Job array can be printed at the end of the function for debugging as the array contains all the logs that were sent to Logstash
                 job_array.append(formatted_error_dictionary)
                 c.to_logstash_json(errlog_dictionary)
             else:
