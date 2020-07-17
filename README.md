@@ -35,11 +35,29 @@ run the following:
 ```sh
 $ docker-compose run --rm ErrorLogging ../bin/cron_shell.sh MM-DD-YYYY MM-DD-YYYY
 ```
+## Testing with Logstash
+To test the output of the cron job or main script (get_errored_apps_EE2) through Logstash, one must set up a 'Logstash Listener/Debugger'.
+First pull the Logstash repo (https://github.com/kbase/logstash) into a separate directory on docker03 and run:
+```sh
+docker run --rm -it -e debug_output=True -p 9000:9000 -p 5044:5044 kbase/logstash
+```
+If port 9000 is taken, run the following Docker commands to find the container name running on 9000:
+```sh
+docker ps | grep 9000
+```
+then 
+```sh
+docker kill CONATAINER_NAME
+```
+Once the Logstash Listener/Debugger is up and running, you need to change the ELASTICSEARCH_HOST url to 172.****** (ask Steve Chan for the url) 
+in your .env for your System Metrics environment. Now run the System Metrics cron job described above and view 
+its output in the Logstash Debugger. 
+
 ## Testing
-To test the output of the main script (pull_app_stats) without uploading logs to
+To test the output of the main script (get_errored_apps_EE2) without uploading logs to
 logstash, one should comment out the following export statement:
 ```sh
 c.to_logstashJson(errlog_dictionary)
 ```
-and one should return "error_logs"
+and one should return "job_array"
 

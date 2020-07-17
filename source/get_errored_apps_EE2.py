@@ -53,7 +53,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
             error_msg = filled_error_dictionary['error']
             formatted_error_dictionary = filter.filter_error(error_msg, filled_error_dictionary)
             job_array.append(formatted_error_dictionary)
-            c.to_logstash_json(errlog_dictionary)
+            c.to_logstash_json(formatted_error_dictionary)
         else:
             # Check if the errormsg key even exist in the log
             if 'errormsg' in errored.keys():
@@ -62,7 +62,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                 formatted_error_dictionary = filter.filter_error(error_msg, errlog_dictionary)
                 # Job array can be printed at the end of the function for debugging as the array contains all the logs that were sent to Logstash
                 job_array.append(formatted_error_dictionary)
-                c.to_logstash_json(errlog_dictionary)
+                c.to_logstash_json(formatted_error_dictionary)
             else:
                 errlog_dictionary['err_prefix'] = "_NULL_"
                 errlog_dictionary['category'] = "_NULL_"
