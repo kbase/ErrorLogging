@@ -23,15 +23,18 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
         end_date_max = datetime.datetime.combine(end_date_dt, datetime.datetime.max.time())
 
         # datetime to epoch. Epoch format needed for elastic query
-        epoch_start = int(start_date_min.strftime('%s')) * 1000
-        epoch_end = int(end_date_max.strftime('%s')) * 1000
+        epoch_start_begin = (float(start_date_min.strftime("%s")) - (14 * 24 * 60 * 60))
+        epoch_finish_begin = float(start_date_min.strftime('%s'))
+        epoch_end = float(end_date_max.strftime('%s'))
     else:
         # datetime to epoch. Epoch format needed for elastic query
-        epoch_start = int(start_date.strftime('%s')) * 1000
-        epoch_end = int(end_date.strftime('%s')) * 1000
+        epoch_start_begin = (float(start_date.strftime("%s")) - (14 * 24 * 60 * 60))
+        epoch_finish_begin = float(start_date.strftime('%s'))
+        epoch_end = float(end_date.strftime('%s'))
     # Initiate array and pull apps with an error status from EE2
     job_array = []
-    params = {'start_time': epoch_start, 'end_time': epoch_end, 'filter': ['status=error'], 'ascending': 0}
+    filters = {'status': 'error', 'finished__gt': epoch_finish_begin, 'finished__lt': epoch_end}
+    params = {'start_time': epoch_start_begin, 'end_time': epoch_end, 'filter': filters,, 'ascending': 0}
     stats = ee2.check_jobs_date_range_for_all(params=params)
     # Iterate through 'errored' jobs/apps
     for errored in stats['jobs']:
