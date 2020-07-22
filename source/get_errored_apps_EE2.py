@@ -21,16 +21,16 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
         start_date_min = datetime.datetime.combine(start_date_dt, datetime.datetime.min.time())
         end_date_dt = datetime.datetime.strptime(end_date, '%m-%d-%Y')
         end_date_max = datetime.datetime.combine(end_date_dt, datetime.datetime.max.time())
-
         # datetime to epoch. Epoch format needed for elastic query
-        epoch_start_begin = (float(start_date_min.strftime("%s")) - (14 * 24 * 60 * 60))
         epoch_finish_begin = float(start_date_min.strftime('%s'))
         epoch_end = float(end_date_max.strftime('%s'))
     else:
         # datetime to epoch. Epoch format needed for elastic query
-        epoch_start_begin = (float(start_date.strftime("%s")) - (14 * 24 * 60 * 60))
         epoch_finish_begin = float(start_date.strftime('%s'))
         epoch_end = float(end_date.strftime('%s'))
+    # the start date range needs to go back 14 days for long running jobs that have not finished yet
+    epoch_start_begin = (epoch_finish_begin - (14 * 24 * 60 * 60))
+    
     # Initiate array and pull apps with an error status from EE2
     job_array = []
     filters = {'status': 'error', 'finished__gt': epoch_finish_begin, 'finished__lt': epoch_end}
