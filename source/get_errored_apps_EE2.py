@@ -34,7 +34,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
     # Initiate array and pull apps with an error status from EE2
     job_array = []
     filters = {'status': 'error', 'finished__gt': epoch_finish_begin, 'finished__lt': epoch_end}
-    params = {'start_time': epoch_start_begin, 'end_time': epoch_end, 'filter': filters, 'ascending': 0}
+    params = {'start_time': epoch_start_begin, 'end_time': epoch_end, 'filter': filters, 'ascending': 0,  "limit": 1000000}
     stats = ee2.check_jobs_date_range_for_all(params=params)
     # Iterate through 'errored' jobs/apps
     for errored in stats['jobs']:
