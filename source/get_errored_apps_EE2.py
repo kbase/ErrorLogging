@@ -11,9 +11,13 @@ yesterday = (datetime.date.today() - datetime.timedelta(days=1))
 
 def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.datetime.min.time()),
                      end_date=datetime.datetime.combine(yesterday, datetime.datetime.max.time())):
-    """This function submits error logs to Logstash. First a call to EE2 is made and app logs that have a job state of 'error' are collected
-    At which point a dictionary is initiated which contains basic info that needs to filled in by info from the errored app log.
-    After making sure basic fields exist, such as work space id or 'wsid', the beginning dictionary and the errored app log are sent to filter.filter_error so other keys can be checked and the error itself categorized and made readable."""
+    """This function submits error logs to Logstash. First a call to EE2 is made and app logs 
+    that have a job state of 'error' are collected
+    At which point a dictionary is initiated which contains basic info that needs to filled 
+    in by info from the errored app log.
+    After making sure basic fields exist, such as work space id or 'wsid', the beginning 
+    dictionary and the errored app log are sent to filter.filter_error so other keys can 
+    be checked and the error itself categorized and made readable."""
 
     if isinstance(start_date, str):
         # Format date strings to datetime objects
@@ -49,6 +53,9 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                              'type': 'ee2errorlogs', "job_id": errored["job_id"],
                              'timestamp': creation_time_iso, "err_prefix": "_NULL_",
                              'error_code': '_NULL_', 'obj_references': "_NULL_"}
+        if "job_input" in errored.keys():
+            if "app_id" in errored["job_input"].keys():
+                errlog_dictionary["app_id"] = errored["job_input"]["app_id"].replace(".", "/")
         # Check if workspace ID is present in EE2 log for app
         if 'wsid' in errored.keys():
             # Send the error to helper functions for formatting
@@ -72,4 +79,3 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                 job_array.append(errlog_dictionary)
                 c.to_logstash_json(errlog_dictionary)
     print("{} Error logs added to Logstash for date range: {} to {}".format(len(job_array), start_date, end_date))
-    
