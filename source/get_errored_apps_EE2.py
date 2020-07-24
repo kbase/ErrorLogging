@@ -4,6 +4,7 @@ import datetime
 import client as c
 import filter
 import check_keys_with_wsid
+from pprint import pprint
 token = os.environ['USER_TOKEN']
 ee2 = EE2Client(url='https://kbase.us/services/ee2',token=token)
 yesterday = (datetime.date.today() - datetime.timedelta(days=1))
@@ -32,12 +33,28 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
     epoch_start_begin = (epoch_finish_begin - (14 * 24 * 60 * 60))
     
     # Initiate array and pull apps with an error status from EE2
+    error_dict = dict()
+    name_of_error_dict = dict()
     job_array = []
     filters = {'status': 'error', 'finished__gt': epoch_finish_begin, 'finished__lt': epoch_end}
     params = {'start_time': epoch_start_begin, 'end_time': epoch_end, 'filter': filters, 'ascending': 0,  "limit": 1000000}
     stats = ee2.check_jobs_date_range_for_all(params=params)
+    top_level_key_counts_dict = dict()
+    app_id_counts_dict = dict()
     # Iterate through 'errored' jobs/apps
     for errored in stats['jobs']:
+        if "job_input" in errored:
+            if "app_id" in errored["job_input"]:
+                app_id = errored["job_input"]["app_id"].replace(".", "/")
+                if app_id in app_id_counts_dict:
+                    app_id_counts_dict[app_id] += 1
+                else:
+                    app_id_counts_dict[app_id] = 1
+        for key in errored:
+            if key in top_level_key_counts_dict:
+                top_level_key_counts_dict[key] += 1
+            else:
+                top_level_key_counts_dict[key] = 1
         # Convert timestamps from milliseconds to seconds.
         millisec_crtime = errored["created"] / 1000.0
         # Format date to ISO and calender date
@@ -56,7 +73,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
             error_msg = filled_error_dictionary['error']
             formatted_error_dictionary = filter.filter_error(error_msg, filled_error_dictionary)
             job_array.append(formatted_error_dictionary)
-            c.to_logstash_json(formatted_error_dictionary)
+            #c.to_logstash_json(formatted_error_dictionary)
         else:
             # Check if the errormsg key even exist in the log
             if 'errormsg' in errored.keys():
@@ -65,11 +82,30 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                 formatted_error_dictionary = filter.filter_error(error_msg, errlog_dictionary)
                 # Job array can be printed at the end of the function for debugging as the array contains all the logs that were sent to Logstash
                 job_array.append(formatted_error_dictionary)
-                c.to_logstash_json(formatted_error_dictionary)
+                #c.to_logstash_json(formatted_error_dictionary)
             else:
                 errlog_dictionary['err_prefix'] = "_NULL_"
                 errlog_dictionary['category'] = "_NULL_"
                 job_array.append(errlog_dictionary)
-                c.to_logstash_json(errlog_dictionary)
+                #c.to_logstash_json(errlog_dictionary)
+        if errlog_dictionary["error"] in error_dict:
+            error_dict[errlog_dictionary["error"]] += 1
+        else:
+            error_dict[errlog_dictionary["error"]] = 1
+            
+        if errlog_dictionary["name_of_error"] in name_of_error_dict:
+            name_of_error_dict[errlog_dictionary["name_of_error"]] += 1
+        else:
+            name_of_error_dict[errlog_dictionary["name_of_error"]] = 1
     print("{} Error logs added to Logstash for date range: {} to {}".format(len(job_array), start_date, end_date))
-    
+#    print("ERROR_DICT:")
+#    pprint(error_dict)
+
+    print("NAME_OF_ERROR_DICT:")
+    pprint(name_of_error_dict)
+
+    print("TOP LEVEL KEY COUNTS:")
+    pprint(top_level_key_counts_dict)
+
+    print("App ids counts:")
+    pprint(app_id_counts_dict)
