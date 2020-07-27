@@ -53,9 +53,8 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                              'type': 'ee2errorlogs', "job_id": errored["job_id"],
                              'timestamp': creation_time_iso, "err_prefix": "_NULL_",
                              'error_code': '_NULL_', 'obj_references': "_NULL_"}
-        if "job_input" in errored.keys():
-            if "app_id" in errored["job_input"].keys():
-                errlog_dictionary["app_id"] = errored["job_input"]["app_id"].replace(".", "/")
+        if "job_input" in errored.keys() and "app_id" in errored["job_input"].keys():
+            errlog_dictionary["app_id"] = errored["job_input"]["app_id"].replace(".", "/")
         # Check if workspace ID is present in EE2 log for app
         if 'wsid' in errored.keys():
             # Send the error to helper functions for formatting
