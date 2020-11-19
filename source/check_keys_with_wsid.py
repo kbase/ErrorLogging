@@ -33,10 +33,16 @@ def check_keys_with_wsid(errored, errlog_dictionary):
             errlog_dictionary['error_code'] = errored['job_output']['error']['code']
         # If 'job_output' key is not present in EE2 log then there is a key 'error' that leads to a nested dictionary with error information
         elif 'error' in errored.keys():
-            errlog_dictionary['error'] = errored['error']['message']
-            errlog_dictionary['traceback'] = errored['error']['error']
-            errlog_dictionary['name_of_error'] = errored['error']['name']
-            errlog_dictionary['error_code'] = errored['error']['code']
+            if 'message' in errored["error"]:
+                errlog_dictionary['error'] = errored['error']['message']
+                errlog_dictionary['traceback'] = errored['error']['error']
+                errlog_dictionary['name_of_error'] = errored['error']['name']
+                errlog_dictionary['error_code'] = errored['error']['code']
+            else:
+                errlog_dictionary['error'] = "unknown no [error][message]"
+                errlog_dictionary['traceback'] = "unknown no [error][error]"
+                errlog_dictionary['name_of_error'] = "unknown no [error][name_of_error]"
+                errlog_dictionary['error_code'] = "unknown no [error][error_code]"
         # Else if there is no 'error' key leading to a nested dict, or 'job_output' leading to a nested dict, then the error info is simple under 'error_msg'.
         elif 'errormsg' in errored.keys():
             errlog_dictionary['error'] = errored['errormsg']
