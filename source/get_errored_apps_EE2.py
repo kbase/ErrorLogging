@@ -6,18 +6,18 @@ import filter
 import check_keys_with_wsid
 from pprint import pprint
 token = os.environ['USER_TOKEN']
-ee2 = EE2Client(url='https://kbase.us/services/ee2',token=token)
+ee2 = EE2Client(url='https://kbase.us/services/ee2', token=token)
 yesterday = (datetime.date.today() - datetime.timedelta(days=1))
 
 
 def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.datetime.min.time()),
                      end_date=datetime.datetime.combine(yesterday, datetime.datetime.max.time())):
-    """This function submits error logs to Logstash. First a call to EE2 is made and app logs 
+    """This function submits error logs to Logstash. First a call to EE2 is made and app logs
     that have a job state of 'error' are collected
-    At which point a dictionary is initiated which contains basic info that needs to filled 
+    At which point a dictionary is initiated which contains basic info that needs to filled
     in by info from the errored app log.
-    After making sure basic fields exist, such as work space id or 'wsid', the beginning 
-    dictionary and the errored app log are sent to filter.filter_error so other keys can 
+    After making sure basic fields exist, such as work space id or 'wsid', the beginning
+    dictionary and the errored app log are sent to filter.filter_error so other keys can
     be checked and the error itself categorized and made readable."""
 
     if isinstance(start_date, str):
@@ -35,7 +35,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
         epoch_end = float(end_date.strftime('%s'))
     # the start date range needs to go back 14 days for long running jobs that have not finished yet
     epoch_start_begin = (epoch_finish_begin - (14 * 24 * 60 * 60))
-    
+
     # Initiate array and pull apps with an error status from EE2
     job_array = []
     filters = {'status': 'error', 'finished__gt': epoch_finish_begin, 'finished__lt': epoch_end}
@@ -64,13 +64,13 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
             error_msg = filled_error_dictionary['error']
             formatted_error_dictionary = filter.filter_error(error_msg, filled_error_dictionary)
             print("###############")
-            print("job_id: " +  formatted_error_dictionary["job_id"])
-            print("app_id: " +  formatted_error_dictionary["app_id"])
+            print("job_id: " + formatted_error_dictionary["job_id"])
+            print("app_id: " + formatted_error_dictionary["app_id"])
             print("error_type: " + formatted_error_dictionary["error_type"])
-            print("error: " +  formatted_error_dictionary['error'])
-            print("err_prefix: " +  formatted_error_dictionary['err_prefix'])
+            print("error: " + formatted_error_dictionary['error'])
+            print("err_prefix: " + formatted_error_dictionary['err_prefix'])
             job_array.append(formatted_error_dictionary)
-#            c.to_logstash_json(formatted_error_dictionary)
+            c.to_logstash_json(formatted_error_dictionary)
         else:
             # Check if the errormsg key even exist in the log
             if 'errormsg' in errored.keys():
@@ -80,31 +80,29 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                 formatted_error_dictionary = filter.filter_error(error_msg, errlog_dictionary)
                 # Job array can be printed at the end of the function for debugging as the array contains all the logs that were sent to Logstash
                 print("###############")
-                print("job_id: " +  formatted_error_dictionary["job_id"])
-                print("app_id: " +  formatted_error_dictionary["app_id"])
+                print("job_id: " + formatted_error_dictionary["job_id"])
+                print("app_id: " + formatted_error_dictionary["app_id"])
                 print("error_type: " + formatted_error_dictionary["error_type"])
-                print("error: " +  formatted_error_dictionary['error'])
-                print("err_prefix: " +  formatted_error_dictionary['err_prefix'])
+                print("error: " + formatted_error_dictionary['error'])
+                print("err_prefix: " + formatted_error_dictionary['err_prefix'])
                 job_array.append(formatted_error_dictionary)
-#                c.to_logstash_json(formatted_error_dictionary)
+                c.to_logstash_json(formatted_error_dictionary)
             else:
                 errlog_dictionary["error_type"] = "NO err_msg no ws_id"
                 errlog_dictionary['err_prefix'] = "_NULL_"
                 errlog_dictionary['category'] = "_NULL_"
                 print("###############")
-                print("job_id: " +  errlog_dictionary["job_id"])
-                print("app_id: " +  errlog_dictionary["app_id"])
-                print("error_type: " +  errlog_dictionary["error_type"])
-                print("error: " +  errlog_dictionary['error'])
-                print("err_prefix: " +  errlog_dictionary['err_prefix'])
+                print("job_id: " + errlog_dictionary["job_id"])
+                print("app_id: " + errlog_dictionary["app_id"])
+                print("error_type: " + errlog_dictionary["error_type"])
+                print("error: " + errlog_dictionary['error'])
+                print("err_prefix: " + errlog_dictionary['err_prefix'])
                 job_array.append(errlog_dictionary)
-#                c.to_logstash_json(errlog_dictionary)
+                c.to_logstash_json(errlog_dictionary)
 #        print("###############")
-#        print("job_id: " +  errlog_dictionary["job_id"])
-#        print("app_id: " +  errlog_dictionary["app_id"])
-#        print("error_type: " +  errlog_dictionary["error_type"])
-#        print("error: " +  errlog_dictionary['error'])
-#        print("err_prefix: " +  errlog_dictionary['err_prefix'])
+#        print("job_id: " + errlog_dictionary["job_id"])
+#        print("app_id: " + errlog_dictionary["app_id"])
+#        print("error_type: " + errlog_dictionary["error_type"])
+#        print("error: " + errlog_dictionary['error'])
+#        print("err_prefix: " + errlog_dictionary['err_prefix'])
     print("{} Error logs added to Logstash for date range: {} to {}".format(len(job_array), start_date, end_date))
-
-    
