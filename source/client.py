@@ -3,7 +3,7 @@ import json
 import os 
 host = os.environ["ELASTICSEARCH_HOST"]
 if (os.environ.get("ELASTICSEARCH_PORT")):
-    port = os.environ["ELASTICSEARCH_PORT"]
+    port = int(os.environ["ELASTICSEARCH_PORT"])
 else:
     port = 9000
     

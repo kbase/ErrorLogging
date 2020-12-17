@@ -10,6 +10,12 @@ def filter_single(error_dictionary, error, regex_pat, sub_sym):
     else:
         error = error[1:-1].strip()
         prefix = re.split(regex_pat, error)
+        if(prefix[0] == "()"):
+            error_dictionary["error"] = "No error found"
+            error_dictionary["err_prefix"] = "No error prefix found"
+            category = add_category(error_dictionary)
+            error_dictionary["category"] = category
+            return error_dictionary
         prefix = list(filter(lambda s: any([c.isalnum() for c in s]), prefix))[0]
         err_prefix = re.sub(sub_sym, '', prefix).replace("(", ' ').replace("[", '').strip()
         error_dictionary["error"] = error
