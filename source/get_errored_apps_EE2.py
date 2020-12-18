@@ -5,7 +5,14 @@ import client as c
 import filter
 import check_keys_with_wsid
 from pprint import pprint
+
+# Token used for querying EE2
 token = os.environ['USER_TOKEN']
+
+# Flag for whether/how much to dump to output as the job runs. Set the env var ERROR_DUMP
+# to turn on a pretty printed dump of the errors as they are processed
+error_dump = os.environ.get("ERROR_DUMP")
+
 ee2 = EE2Client(url='https://kbase.us/services/ee2', token=token)
 yesterday = (datetime.date.today() - datetime.timedelta(days=1))
 
@@ -75,7 +82,8 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                 errlog_dictionary['err_prefix'] = "_NULL_"
                 errlog_dictionary['category'] = "_NULL_"
                 error_dictionary = errlog_dictionary
-        pprint(error_dictionary)
+        if error_dump:
+            pprint(error_dictionary)
         job_array.append(error_dictionary)
         c.to_logstash_json(error_dictionary)
 
