@@ -19,7 +19,7 @@ def check_keys_with_wsid(errored, errlog_dictionary):
     if 'job_input' in errored.keys():
         # Getuseful keys from job input
         if 'params' in errored['job_input'].keys():
-            errlog_dictionary['obj_references'] = json.dumps(errored['job_input']['params'], sort_keys=True, indent=4)[0:199]
+            errlog_dictionary['obj_references'] = json.dumps(errored['job_input']['params'], sort_keys=True, indent=4)[0:300]
         # If a EE2 log as a 'job_output' key then that key leads to a nested dictionary that contains the error msg info
         if 'job_output' in errored.keys() and errored['job_output']:
             # the key 'error' in the job_output dictionary can sometimes lead to a dictionary itself
