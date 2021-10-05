@@ -20,10 +20,15 @@ COPY --from=narrative /kb/runtime/lib /kb/runtime/lib
 COPY --from=narrative /kb/dev_container/narrative/src/dist/biokbase-0.0.1-py3.6.egg /tmp/biokbase-0.0.1-py3.6.egg
 
 COPY bin /root/bin
+
+ENV PYTHONPATH=/kb/runtime/lib/python3.6/site-packages/
+
 RUN cd /root/bin && wget https://github.com/kbase/dockerize/raw/master/dockerize-linux-amd64-v0.6.1.tar.gz && \
     tar xzf dockerize-linux-amd64-v0.6.1.tar.gz && \
     rm dockerize-linux-amd64-v0.6.1.tar.gz && \
-    easy_install --no-deps /tmp/biokbase-0.0.1-py3.6.egg
+    python /kb/runtime/lib/python3.6/site-packages/setuptools/command/easy_install.py --no-deps /tmp/biokbase-0.0.1-py3.6.egg
+
+ENV PYTHONPATH=/kb/runtime/lib/python3.6/site-packages/:/kb/runtime/lib/python3.6/site-packages/biokbase-0.0.1-py3.6.egg
 
 COPY source /root/source
 WORKDIR /root/source
