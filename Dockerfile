@@ -47,6 +47,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.vcs-ref=$COMMIT \
       org.label-schema.schema-version="1.0.0-rc1" \
       us.kbase.vcs-branch=$BRANCH  \
-      maintainer="Steve Chan sychan@lbl.gov"
+      org.opencontainers.image.source="https://github.com/kbase/ErrorLogging" \
+      org.opencontainers.image.authors=="Jason Baumohl jkbaumohl@lbl.gov"
 
 ENTRYPOINT [ "/bin/bash" ]
