@@ -4,6 +4,7 @@ import datetime
 import client as c
 import filter
 import check_keys_with_wsid
+import json
 from pprint import pprint
 
 # Token used for querying EE2
@@ -85,6 +86,10 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
         if error_dump:
             pprint(error_dictionary)
         job_array.append(error_dictionary)
+        
+        json_string = json.dumps(error_dictionary)
+        print(str(json_string.encode()))
+#        print(json_string)
         c.to_logstash_json(error_dictionary)
 
     print("{} Error logs added to Logstash for date range: {} to {}".format(len(job_array), start_date, end_date))
