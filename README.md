@@ -3,7 +3,9 @@
 This repository contains code for gathering and uploading KBase app errors from user job
 states in the catalog, workspace and execution engine. This repository is run through a cron job every night.
 The main function in the repo is get_errored_apps_EE2. 
-The cron job calls the upload_errorlogs function that calls the main get_errored_apps_EE2 function. 
+The cron job calls the upload_errorlogs function that calls the main get_errored_apps_EE2 function.
+In the error output, extremely long object references have been observed ( 10k+ lines ). The full obj
+reference is not necessary for reporting purposes and is being truncated to 300 chars.
 
 ## Getting Started
 Before being able to run this docker container a ".env" file needs to be made. 
@@ -59,10 +61,15 @@ in your .env for your System Metrics environment. Now run the System Metrics cro
 its output in the Logstash Debugger. 
 
 ## Testing
-To test the output of the main script (get_errored_apps_EE2) without uploading logs to
-logstash, one should comment out the following export statement:
-```sh
-c.to_logstashJson(errlog_dictionary)
-```
-and one should return "job_array"
+
+There are 2 environment variables that can be used to facilitate testing:
+
+_ERROR_DUMP_ : a flag the turns on dump the full contents of each error log record to the console so that. By default error records
+are no longer output to the console, and setting a ERROR_DUMP environment variable (set in .env files) to a non-empty value will
+turn out the dump of the error records again.
+
+_ELASTICSEARCH_HOST_ : if there is no value set for this environment variable, then nothing will be sent to the elasticsearch server.
+When the importer runs, it will display the hostname and port that is used for elasticsearch output, if no value is set then
+a message "No ELASTICSEARCH_HOST set, no records will be sent to elasticsearch" will be displayed, indicating that nothing will be
+written to elasticsearch.
 
