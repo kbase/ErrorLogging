@@ -46,7 +46,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
 
     # counter for jobs finished within the last day
     last_day_jobs_counter = 0
-    
+
     # Initiate array and pull apps with an error status from EE2
     job_array = []
     filters = {'status': 'error', 'finished__gt': epoch_finish_begin, 'finished__lt': epoch_end}
