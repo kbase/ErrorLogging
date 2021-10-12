@@ -45,7 +45,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
     epoch_start_begin = (epoch_finish_begin - (14 * 24 * 60 * 60))
 
     # counter for jobs finished within the last day
-    last_day_jobs_counter = 0
+    errored_jobs_after_start_counter = 0
 
     # Initiate array and pull apps with an error status from EE2
     job_array = []
@@ -89,7 +89,7 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
         if "finished" in errored:
             finished = str(datetime.datetime.fromtimestamp(errored["finished"] / 1000))
             if errored["finished"] / 1000 > epoch_finish_begin:
-                last_day_jobs_counter += 1
+                errored_jobs_after_start_counter += 1
         run_start = finished
         if "running" in errored:
             run_start = str(datetime.datetime.fromtimestamp(errored["running"] / 1000))
@@ -97,13 +97,12 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
         errlog_dictionary["run_start"] = run_start
         if error_dump:
             pprint(error_dictionary)
+            json_string = json.dumps(error_dictionary)
+            print(str(json_string.encode()))
         job_array.append(error_dictionary)
         
-        json_string = json.dumps(error_dictionary)
-        print(str(json_string.encode()))
-#        print(json_string)
         c.to_logstash_json(error_dictionary)
 
     print("{} Error logs added to Logstash for date range: {} to {}".format(len(job_array), start_date, end_date))
     print("Epoch Start time minus 14 days {} , Epoch Start time {} , and  to Epoch End time {}".format(epoch_start_begin, epoch_finish_begin, epoch_end))
-    print("Errored Jobs finished in the last day {}".format(last_day_jobs_counter))
+    print("Errored Jobs finished after the start {}".format(errored_jobs_after_start_counter))
