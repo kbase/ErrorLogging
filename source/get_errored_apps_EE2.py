@@ -100,7 +100,6 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
             json_string = json.dumps(error_dictionary)
             print(str(json_string.encode()))
         job_array.append(error_dictionary)
-        
         c.to_logstash_json(error_dictionary)
 
     print("{} Error logs added to Logstash for date range: {} to {}".format(len(job_array), start_date, end_date))
