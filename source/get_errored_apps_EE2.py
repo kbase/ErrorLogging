@@ -4,6 +4,7 @@ import datetime
 import client as c
 import filter
 import check_keys_with_wsid
+import json
 from pprint import pprint
 
 # Token used for querying EE2
@@ -42,6 +43,9 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
         epoch_end = float(end_date.strftime('%s'))
     # the start date range needs to go back 14 days for long running jobs that have not finished yet
     epoch_start_begin = (epoch_finish_begin - (14 * 24 * 60 * 60))
+
+    # counter for jobs finished within the last day
+    errored_jobs_after_start_counter = 0
 
     # Initiate array and pull apps with an error status from EE2
     job_array = []
@@ -82,9 +86,22 @@ def get_errored_apps(start_date=datetime.datetime.combine(yesterday, datetime.da
                 errlog_dictionary['err_prefix'] = "_NULL_"
                 errlog_dictionary['category'] = "_NULL_"
                 error_dictionary = errlog_dictionary
+        if "finished" in errored:
+            finished = str(datetime.datetime.fromtimestamp(errored["finished"] / 1000))
+            if errored["finished"] / 1000 > epoch_finish_begin:
+                errored_jobs_after_start_counter += 1
+        run_start = finished
+        if "running" in errored:
+            run_start = str(datetime.datetime.fromtimestamp(errored["running"] / 1000))
+        errlog_dictionary["run_finish"] = finished
+        errlog_dictionary["run_start"] = run_start
         if error_dump:
             pprint(error_dictionary)
+            json_string = json.dumps(error_dictionary)
+            print(str(json_string.encode()))
         job_array.append(error_dictionary)
         c.to_logstash_json(error_dictionary)
 
     print("{} Error logs added to Logstash for date range: {} to {}".format(len(job_array), start_date, end_date))
+    print("Epoch Start time minus 14 days {} , Epoch Start time {} , and  to Epoch End time {}".format(epoch_start_begin, epoch_finish_begin, epoch_end))
+    print("Errored Jobs finished after the start {}".format(errored_jobs_after_start_counter))

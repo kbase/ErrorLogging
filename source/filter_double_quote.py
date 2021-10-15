@@ -8,7 +8,10 @@ def filter_double(error_dictionary, error, regex_pat, sub_sym):
     # First the other quotes are striped
     error = error[1:-1].strip()
     # Errors that end in double quotes can be wrapping single quotes
-    if error[0] == error[-1] == "'":
+
+    if error == "'()'" :
+        err_prefix = "Empty Error"
+    elif error[0] == error[-1] == "'":
         error = error[1:-1]
         # The 'error prefix' is simply a cleaned version of the original error
         prefix = re.split(regex_pat, error)
