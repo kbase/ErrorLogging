@@ -13,6 +13,7 @@ def check_keys_with_wsid(errored, errlog_dictionary):
     # Sometimes wsid's can be -1, EE2 symbol for an unknown
     if wsid == -1:
         wsid = 'unknown'
+
     # If wsid not unknown add it to our error dictionary
     errlog_dictionary['workspace_id'] = wsid
     # Check if job input key is present in 'errored'. Here 'errored' is the big json error log coming from EE2
