@@ -20,7 +20,10 @@ def filter_tuple(error_dictionary, error, regex_pat, sub_sym):
         err_prefix = re.sub(sub_sym, '', prefix).replace("(", ' ').replace("[", '').replace("]", '').strip()
     # Update error dictionary for error and append to logs
     # Once the error and error_prefix is in the dictionary, the dictionary is sent to add_category for a category to be added.
-    error_dictionary["error"] = error
+    if error:
+        error_dictionary["error"] = error
+    else:
+        error_dictionary["error"] = "No Error Found"
     error_dictionary["err_prefix"] = err_prefix
     category = add_category(error_dictionary)
     error_dictionary["category"] = category
