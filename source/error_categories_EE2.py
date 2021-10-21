@@ -10,9 +10,9 @@ def add_category(error_dict):
     Otherwise, if no mapping is found, the app method name is given as the error category"""
     # Pull app log and get error -> categories dictionary
     if isinstance(error_dict['error'], str):
-        error_values_all = error_dict['error'] + error_dict['traceback']
+        error_values_all = error_dict['error'] + str(error_dict['traceback'])
     else:
-        error_values_all = error_dict['traceback']
+        error_values_all = str(error_dict['traceback'])
     # Categories is a helper function that takes the category listing the Error.ini and returns a dict from key to category
     categories = config_to_dictionary()
     for category, error_array in categories.items():
